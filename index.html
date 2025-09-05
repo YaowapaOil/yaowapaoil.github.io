@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบ POS ร้านค้า</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            padding: 20px 30px;
+            color: white;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 0;
+            min-height: 600px;
+        }
+        
+        .products-section {
+            padding: 30px;
+            background: #f8f9fa;
+        }
+        
+        .section-title {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            color: #333;
+            border-bottom: 3px solid #4facfe;
+            padding-bottom: 10px;
+        }
+        
+        .product-form {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(79, 172, 254, 0.4);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #56ab2f 0%, #a8e6cf 100%);
+            color: white;
+            margin-right: 10px;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ffa8a8 100%);
+            color: white;
+        }
+        
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        
+        .product-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            border: 1px solid #f0f0f0;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        
+        .product-name {
+            font-size: 1.2em;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .product-price {
+            font-size: 1.1em;
+            color: #4facfe;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        .product-barcode {
+            font-size: 0.9em;
+            color: #7f8c8d;
+            margin-bottom: 15px;
+            word-break: break-all;
+        }
+        
+        .cart-section {
+            background: #2c3e50;
+            color: white;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .cart-title {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #ecf0f1;
+        }
+        
+        .cart-items {
+            flex-grow: 1;
+            margin-bottom: 20px;
+        }
+        
+        .cart-item {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .item-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .item-details {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9em;
+            color: #bdc3c7;
+        }
+        
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .qty-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .qty-btn:hover {
+            background: #2980b9;
+        }
+        
+        .cart-total {
+            background: rgba(255,255,255,0.2);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 5px 0;
+        }
+        
+        .total-final {
+            border-top: 2px solid rgba(255,255,255,0.3);
+            padding-top: 15px;
+            font-size: 1.3em;
+            font-weight: 700;
+            color: #f1c40f;
+        }
+        
+        .checkout-section {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .payment-input {
+            padding: 12px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 8px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            font-size: 16px;
+        }
+        
+        .payment-input::placeholder {
+            color: rgba(255,255,255,0.7);
+        }
+        
+        .payment-input:focus {
+            outline: none;
+            border-color: #f1c40f;
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .change-amount {
+            text-align: center;
+            font-size: 1.2em;
+            color: #f1c40f;
+            font-weight: 600;
+            margin: 10px 0;
+        }
+        
+        .receipt {
+            background: white;
+            color: #333;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .products-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+            
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏪 พนิดา การค้า</h1>
+            <p>ระบบจัดการการขายและคำนวณเงินทอน</p>
+        </div>
+        
+        <div class="main-content">
+            <div class="products-section">
+                <h2 class="section-title">📦 จัดการสินค้า</h2>
+                
+                <div class="product-form">
+                    <div class="form-group">
+                        <label for="productName">ชื่อสินค้า:</label>
+                        <input type="text" id="productName" placeholder="กรุณากรอกชื่อสินค้า">
+                    </div>
+                    <div class="form-group">
+                        <label for="productPrice">ราคา (บาท):</label>
+                        <input type="number" id="productPrice" step="0.01" placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label for="productBarcode">รหัสบาร์โค้ด:</label>
+                        <input type="text" id="productBarcode" placeholder="เช่น 1234567890128">
+                    </div>
+                    <button class="btn btn-primary" onclick="addProduct()">เพิ่มสินค้า</button>
+                </div>
+                
+                <h3 class="section-title">รายการสินค้า</h3>
+                <div class="products-grid" id="productsGrid">
+                    <!-- สินค้าจะแสดงที่นี่ -->
+                </div>
+            </div>
+            
+            <div class="cart-section">
+                <h2 class="cart-title">🛒 ตะกร้าสินค้า</h2>
+
+                <div style="margin-bottom: 20px; text-align: center;">
+                    <input type="text" id="cartBarcodeInput" placeholder="กรอกรหัสบาร์โค้ดเพื่อเพิ่มสินค้า" style="padding: 10px; border-radius: 8px; border: 1px solid #ccc; width: 80%; max-width: 250px;" onkeypress="cartBarcodeAdd(event)">
+                    <button class="btn btn-success" onclick="cartBarcodeAddManual()">เพิ่มเข้าตะกร้า</button>
+                </div>
+                
+                <div class="cart-items" id="cartItems">
+                    <p style="text-align: center; color: #bdc3c7; margin-top: 50px;">ยังไม่มีสินค้าในตะกร้า</p>
+                </div>
+                
+                <div class="cart-total" id="cartTotal" style="display: none;">
+                    <div class="total-row">
+                        <span>ยอดรวม:</span>
+                        <span id="subtotal">0.00 บาท</span>
+                    </div>
+                    <div class="total-row">
+                        <span>ภาษี (7%):</span>
+                        <span id="tax">0.00 บาท</span>
+                    </div>
+                    <div class="total-row total-final">
+                        <span>ยอดสุทธิ:</span>
+                        <span id="total">0.00 บาท</span>
+                    </div>
+                </div>
+                
+                <div class="checkout-section">
+                    <input type="number" id="paymentAmount" class="payment-input" placeholder="จำนวนเงินที่รับ (บาท)" step="0.01">
+                    <div class="change-amount" id="changeAmount"></div>
+                    <button class="btn btn-success" onclick="processPayment()">💰 ชำระเงิน</button>
+                    <button class="btn btn-danger" onclick="clearCart()">🗑️ ล้างตะกร้า</button>
+                </div>
+                
+                <div class="receipt" id="receipt" style="display: none;">
+                    <!-- ใบเสร็จจะแสดงที่นี่ -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let products = [];
+        let cart = [];
+        let receiptNumber = 1;
+
+        // เพิ่มสินค้าเริ่มต้น
+        function initializeProducts() {
+            const defaultProducts = [
+                { id: 1, name: 'น้ำดื่ม', price: 15.00, barcode: '8850001234567' },
+                { id: 2, name: 'ขนมปัง', price: 35.00, barcode: '8850001234574' },
+                { id: 3, name: 'กาแฟกระป๋อง', price: 25.00, barcode: '8850001234581' },
+                { id: 4, name: 'ลูกอม', price: 5.00, barcode: '8850001234598' }
+            ];
+            
+            defaultProducts.forEach(product => {
+                products.push(product);
+            });
+            displayProducts();
+            document.getElementById('scanBarcode').focus();
+        }
+
+        function addProduct() {
+            const name = document.getElementById('productName').value.trim();
+            const price = parseFloat(document.getElementById('productPrice').value);
+            const barcode = document.getElementById('productBarcode').value.trim();
+
+            if (!name || price < 0 || !barcode) {
+                alert('กรุณากรอกข้อมูลสินค้าให้ครบถ้วน');
+                return;
+            }
+
+            // ตรวจสอบว่าบาร์โค้ดซ้ำหรือไม่
+            if (products.some(p => p.barcode === barcode)) {
+                alert('รหัสบาร์โค้ดซ้ำ กรุณาใช้รหัสที่ไม่ซ้ำกัน');
+                return;
+            }
+
+            const product = {
+                id: Date.now(),
+                name: name,
+                price: price,
+                barcode: barcode
+            };
+
+            products.push(product);
+            displayProducts();
+
+            // ล้างฟอร์ม
+            document.getElementById('productName').value = '';
+            document.getElementById('productPrice').value = '';
+            document.getElementById('productBarcode').value = '';
+        }
+
+        function displayProducts() {
+            const grid = document.getElementById('productsGrid');
+            grid.innerHTML = '';
+
+            products.forEach(product => {
+                const productCard = document.createElement('div');
+                productCard.className = 'product-card';
+                productCard.innerHTML = `
+                    <div class="product-name">${product.name}</div>
+                    <div class="product-price">${product.price.toFixed(2)} บาท</div>
+                    <div class="product-barcode">รหัส: ${product.barcode}</div>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn btn-success" onclick="addToCartByBarcode('${product.barcode}')" style="flex: 1;">
+                            🛒 เพิ่มลงตะกร้า
+                        </button>
+                        <button class="btn btn-danger" onclick="deleteProduct(${product.id})">
+                            🗑️
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(productCard);
+            });
+        }
+
+        function deleteProduct(productId) {
+            if (confirm('คุณต้องการลบสินค้านี้ใช่หรือไม่?')) {
+                products = products.filter(p => p.id !== productId);
+                displayProducts();
+            }
+        }
+
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+
+            const existingItem = cart.find(item => item.id === productId);
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({
+                    id: product.id,
+                    name: product.name,
+                    price: product.price,
+                    quantity: 1
+                });
+            }
+
+            displayCart();
+        }
+
+        function addToCartByBarcode(barcode) {
+            const product = products.find(p => p.barcode === barcode);
+            if (product) {
+                addToCart(product.id);
+            } else {
+                alert('ไม่พบสินค้า');
+            }
+        }
+
+        function scanBarcode(event) {
+            if (event.key === 'Enter') {
+                const barcode = document.getElementById('scanBarcode').value.trim();
+                if (!barcode) return;
+
+                const product = products.find(p => p.barcode === barcode);
+                if (product) {
+                    addToCart(product.id);
+                    document.getElementById('scanBarcode').value = '';
+                    setTimeout(() => document.getElementById('scanBarcode').focus(), 100);
+                } else {
+                    alert('ไม่พบสินค้าที่มีบาร์โค้ดนี้');
+                    document.getElementById('scanBarcode').select();
+                }
+            }
+        }
+
+        function displayCart() {
+            const cartItems = document.getElementById('cartItems');
+            const cartTotal = document.getElementById('cartTotal');
+
+            if (cart.length === 0) {
+                cartItems.innerHTML = '<p style="text-align: center; color: #bdc3c7; margin-top: 50px;">ยังไม่มีสินค้าในตะกร้า</p>';
+                cartTotal.style.display = 'none';
+                return;
+            }
+
+            cartItems.innerHTML = '';
+            cart.forEach(item => {
+                const cartItem = document.createElement('div');
+                cartItem.className = 'cart-item';
+                cartItem.innerHTML = `
+                    <div class="item-name">${item.name}</div>
+                    <div class="item-details">
+                        <span>${item.price.toFixed(2)} บาท</span>
+                        <div class="quantity-controls">
+                            <button class="qty-btn" onclick="updateQuantity(${item.id}, -1)">-</button>
+                            <span style="color: white; font-weight: 600;">${item.quantity}</span>
+                            <button class="qty-btn" onclick="updateQuantity(${item.id}, 1)">+</button>
+                        </div>
+                        <span>${(item.price * item.quantity).toFixed(2)} บาท</span>
+                    </div>
+                `;
+                cartItems.appendChild(cartItem);
+            });
+
+            // คำนวณยอดรวม
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const tax = subtotal * 0.07;
+            const total = subtotal + tax;
+
+            document.getElementById('subtotal').textContent = subtotal.toFixed(2) + ' บาท';
+            document.getElementById('tax').textContent = tax.toFixed(2) + ' บาท';
+            document.getElementById('total').textContent = total.toFixed(2) + ' บาท';
+
+            cartTotal.style.display = 'block';
+        }
+
+        function updateQuantity(itemId, change) {
+            const item = cart.find(item => item.id === itemId);
+            if (!item) return;
+
+            item.quantity += change;
+            if (item.quantity <= 0) {
+                cart = cart.filter(cartItem => cartItem.id !== itemId);
+            }
+
+            displayCart();
+        }
+
+        function clearCart() {
+            if (cart.length === 0) return;
+            
+            if (confirm('คุณต้องการล้างสินค้าทั้งหมดในตะกร้าใช่หรือไม่?')) {
+                cart = [];
+                displayCart();
+                document.getElementById('paymentAmount').value = '';
+                document.getElementById('changeAmount').textContent = '';
+                document.getElementById('receipt').style.display = 'none';
+            }
+        }
+
+        function processPayment() {
+            if (cart.length === 0) {
+                alert('ไม่มีสินค้าในตะกร้า');
+                return;
+            }
+
+            const paymentAmount = parseFloat(document.getElementById('paymentAmount').value);
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const tax = subtotal * 0.07;
+            const total = subtotal + tax;
+
+            if (isNaN(paymentAmount) || paymentAmount < total) {
+                alert('จำนวนเงินไม่เพียงพอ');
+                return;
+            }
+
+            const change = paymentAmount - total;
+            document.getElementById('changeAmount').textContent = `เงินทอน: ${change.toFixed(2)} บาท`;
+
+            // สร้างใบเสร็จ
+            generateReceipt(paymentAmount, change);
+        }
+
+        function generateReceipt(paymentAmount, change) {
+            const now = new Date();
+            const dateTime = now.toLocaleString('th-TH');
+            
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const tax = subtotal * 0.07;
+            const total = subtotal + tax;
+
+            let receiptHTML = `
+                <div style="text-align: center; border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 10px;">
+                    <h3>🏪 พนิดา การค้า</h3>
+                    <p>ใบเสร็จรับเงิน #${receiptNumber.toString().padStart(4, '0')}</p>
+                    <p>${dateTime}</p>
+                </div>
+                
+                <div style="margin-bottom: 15px;">
+            `;
+
+            cart.forEach(item => {
+                receiptHTML += `
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                        <span>${item.name}</span>
+                        <span>${item.quantity} x ${item.price.toFixed(2)}</span>
+                        <span>${(item.price * item.quantity).toFixed(2)}</span>
+                    </div>
+                `;
+            });
+
+            receiptHTML += `
+                </div>
+                
+                <div style="border-top: 1px solid #ccc; padding-top: 10px;">
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>ยอดรวม:</span>
+                        <span>${subtotal.toFixed(2)} บาท</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>ภาษี (7%):</span>
+                        <span>${tax.toFixed(2)} บาท</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-weight: bold; border-top: 1px solid #333; padding-top: 5px; margin-top: 5px;">
+                        <span>ยอดสุทธิ:</span>
+                        <span>${total.toFixed(2)} บาท</span>
+                    </div>
+                </div>
+                
+                <div style="border-top: 1px solid #ccc; padding-top: 10px; margin-top: 10px;">
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>เงินที่รับ:</span>
+                        <span>${paymentAmount.toFixed(2)} บาท</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-weight: bold;">
+                        <span>เงินทอน:</span>
+                        <span>${change.toFixed(2)} บาท</span>
+                    </div>
+                </div>
+                
+                <div style="text-align: center; margin-top: 15px; padding-top: 10px; border-top: 1px solid #ccc;">
+                    <p>ขอบคุณที่ใช้บริการ</p>
+                    <p>โทร: 02-xxx-xxxx</p>
+                </div>
+            `;
+
+            document.getElementById('receipt').innerHTML = receiptHTML;
+            document.getElementById('receipt').style.display = 'block';
+
+            receiptNumber++;
+            
+            // ล้างตะกร้าหลังการชำระเงิน
+            setTimeout(() => {
+                if (confirm('การชำระเงินสำเร็จ! ต้องการล้างตะกร้าเพื่อขายต่อไปใช่หรือไม่?')) {
+                    cart = [];
+                    displayCart();
+                    document.getElementById('paymentAmount').value = '';
+                    document.getElementById('changeAmount').textContent = '';
+                    document.getElementById('receipt').style.display = 'none';
+                }
+            }, 2000);
+        }
+
+        // คำนวณเงินทอนแบบเรียลไทม์
+        document.getElementById('paymentAmount').addEventListener('input', function() {
+            const paymentAmount = parseFloat(this.value);
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const tax = subtotal * 0.07;
+            const total = subtotal + tax;
+
+            if (!isNaN(paymentAmount) && paymentAmount >= total) {
+                const change = paymentAmount - total;
+                document.getElementById('changeAmount').textContent = `เงินทอน: ${change.toFixed(2)} บาท`;
+                document.getElementById('changeAmount').style.color = '#f1c40f';
+            } else if (!isNaN(paymentAmount) && paymentAmount > 0) {
+                document.getElementById('changeAmount').textContent = 'จำนวนเงินไม่เพียงพอ';
+                document.getElementById('changeAmount').style.color = '#e74c3c';
+            } else {
+                document.getElementById('changeAmount').textContent = '';
+            }
+        });
+
+        function cartBarcodeAdd(event) {
+    if (event.key === 'Enter') {
+        cartBarcodeAddManual();
+    }
+}
+
+function cartBarcodeAddManual() {
+    const barcode = document.getElementById('cartBarcodeInput').value.trim();
+    if (!barcode) return;
+    addToCartByBarcode(barcode);
+    document.getElementById('cartBarcodeInput').value = '';
+    setTimeout(() => document.getElementById('cartBarcodeInput').focus(), 100);
+}
+
+        // เริ่มต้นระบบ
+        initializeProducts();
+    </script>
+</body>
+</html>
