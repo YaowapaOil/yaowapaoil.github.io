@@ -606,6 +606,32 @@
 
             // สร้างใบเสร็จ
             generateReceipt(paymentAmount, change);
+
+            // เพิ่มปุ่มปริ้นใบเสร็จ
+            setTimeout(() => {
+                const receiptDiv = document.getElementById('receipt');
+                if (!document.getElementById('printReceiptBtn')) {
+                    const printBtn = document.createElement('button');
+                    printBtn.id = 'printReceiptBtn';
+                    printBtn.className = 'btn btn-primary';
+                    printBtn.textContent = '🖨️ ปริ้นใบเสร็จ';
+                    printBtn.style = 'width: 100%; margin-top: 10px;';
+                    printBtn.onclick = function() {
+                        const printContents = receiptDiv.innerHTML;
+                        const printWindow = window.open('', '', 'height=600,width=400');
+                        printWindow.document.write('<html><head><title>ใบเสร็จรับเงิน</title>');
+                        printWindow.document.write('<style>body{font-family:Courier New,monospace;font-size:12px;padding:20px;} h3{text-align:center;} </style>');
+                        printWindow.document.write('</head><body>');
+                        printWindow.document.write(printContents);
+                        printWindow.document.write('</body></html>');
+                        printWindow.document.close();
+                        printWindow.focus();
+                        printWindow.print();
+                    };
+                    receiptDiv.appendChild(printBtn);
+                }
+            }, 100);
+
         }
 
         function generateReceipt(paymentAmount, change) {
