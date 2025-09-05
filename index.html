@@ -367,10 +367,6 @@
                         <span>ยอดรวม:</span>
                         <span id="subtotal">0.00 บาท</span>
                     </div>
-                    <div class="total-row">
-                        <span>ภาษี (7%):</span>
-                        <span id="tax">0.00 บาท</span>
-                    </div>
                     <div class="total-row total-final">
                         <span>ยอดสุทธิ:</span>
                         <span id="total">0.00 บาท</span>
@@ -551,11 +547,12 @@
 
             // คำนวณยอดรวม
             const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            const tax = subtotal * 0.07;
-            const total = subtotal + tax;
+            // ลบการคำนวณภาษี
+            // const tax = subtotal * 0.07;
+            const total = subtotal;
 
             document.getElementById('subtotal').textContent = subtotal.toFixed(2) + ' บาท';
-            document.getElementById('tax').textContent = tax.toFixed(2) + ' บาท';
+            // document.getElementById('tax').textContent = tax.toFixed(2) + ' บาท';
             document.getElementById('total').textContent = total.toFixed(2) + ' บาท';
 
             cartTotal.style.display = 'block';
@@ -593,8 +590,8 @@
 
             const paymentAmount = parseFloat(document.getElementById('paymentAmount').value);
             const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            const tax = subtotal * 0.07;
-            const total = subtotal + tax;
+            // const tax = subtotal * 0.07;
+            const total = subtotal;
 
             if (isNaN(paymentAmount) || paymentAmount < total) {
                 alert('จำนวนเงินไม่เพียงพอ');
@@ -639,8 +636,8 @@
             const dateTime = now.toLocaleString('th-TH');
             
             const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            const tax = subtotal * 0.07;
-            const total = subtotal + tax;
+            // const tax = subtotal * 0.07;
+            const total = subtotal;
 
             let receiptHTML = `
                 <div style="text-align: center; border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 10px;">
@@ -670,10 +667,7 @@
                         <span>ยอดรวม:</span>
                         <span>${subtotal.toFixed(2)} บาท</span>
                     </div>
-                    <div style="display: flex; justify-content: space-between;">
-                        <span>ภาษี (7%):</span>
-                        <span>${tax.toFixed(2)} บาท</span>
-                    </div>
+                    <!-- ลบแถวภาษี -->
                     <div style="display: flex; justify-content: space-between; font-weight: bold; border-top: 1px solid #333; padding-top: 5px; margin-top: 5px;">
                         <span>ยอดสุทธิ:</span>
                         <span>${total.toFixed(2)} บาท</span>
@@ -718,8 +712,8 @@
         document.getElementById('paymentAmount').addEventListener('input', function() {
             const paymentAmount = parseFloat(this.value);
             const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            const tax = subtotal * 0.07;
-            const total = subtotal + tax;
+            // const tax = subtotal * 0.07;
+            const total = subtotal;
 
             if (!isNaN(paymentAmount) && paymentAmount >= total) {
                 const change = paymentAmount - total;
